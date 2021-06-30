@@ -1,28 +1,84 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <form class="form_input">
+      <input id="searchJoke" value="Введите слово для поиска анекдотов" size="100px">
+    </form>
+    <div class="container">
+      <div class="joke_content">Анекдот 1</div>
+    </div>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+
 
 export default {
   name: 'App',
+  data(){
+    return {
+      jokes: null ,
+      category:'',
+      answerToTheQuestion: {
+        setup:'',
+        delivery:''
+      }
+    }
+  },
   components: {
-    HelloWorld
-  }
+    
+  },
+  async mounted(){
+    let res = await this.requestJokes();
+    this.jokes = res
+    console.log(this.jokes);
+  },
+  methods: {
+    async requestJokes() {
+      let baseURL = "https://v2.jokeapi.dev";
+      let params = {
+          contains: '',
+          amount: 10
+      };
+      let response = await fetch(`
+          ${baseURL}/joke/Any?Contains=${params.contains}&amount=${params.amount}
+        `)
+          .then(req=>req.json())
+          .then(data => data )
+          .catch((error) => {
+            console.error('Error:', error);
+          });
+          return response
+    },
+    divisionOfAnObject(){
+      
+    },
+  },
 }
 </script>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+#searchJoke{
+  height: 50px;
+  width: 99%;
+  border: none;
+
+}
+.container {
+  border: 1px solid #black;
+  height: 700px;
+  width: 500px;
+  margin: 0 auto;
+  border: 1px solid #black;
+  border: #0b0b0a solid 2px;
+}
+.form_input{
+  width: 500px;
+  margin: 50px auto;
+  margin-top: 50px;
+  border: #0b0b0a solid 2px;
+}
+.joke_content{
+  display: inline;
+  width: 100%;
 }
 </style>
