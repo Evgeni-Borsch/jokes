@@ -8,6 +8,11 @@
       />
     </form>
     <div class="container">
+      <div v-if="savedJokes.lenght != 0">
+        <div class="card">
+          {{ savedJokes.joke || savedJokes.setup }}
+        </div>
+      </div>
       <div 
         class="joke_content" 
         v-for="(joke,idx) in jokes" 
@@ -24,7 +29,7 @@
             </span> 
 
             <span v-else> 
-              {{idx+1}}). {{ joke.setup }}   <p>{{ joke.delivery }}</p> 
+              {{idx+1}}). {{ joke.setup }}<p> {{ joke.delivery }} </p> 
             </span> 
           </div>        
           <i class="fa fa-thumbs-up icon" @click="getLike(idx)"></i>
@@ -64,7 +69,6 @@ export default {
   },
 
   mounted() {
-    this.contains='';
     let res =  this.get_jokes();
     this.jokes = res.jokes;
     this.category = res.category;
@@ -85,39 +89,29 @@ export default {
       this.activeColor = !this.activeColor;
 
       let dom_elem_icon = document.querySelectorAll(".icon");
-      if (this.activeColor === true){
+      if (this.activeColor === true) {
         return dom_elem_icon[index].style.color = 'gray';
       } else {
         dom_elem_icon[index].style.color = 'green';
-          console.log(this.jokes[index]);
-          const result = {};
-          Object.keys(this.jokes[index]).forEach(key => result[key] = this.jokes[index][key]);
-          this.savedJokes = {...this.jokes[index]};
-          let div = document.createElement('div')
-          div.className = "saved_joke";
-          // if( !result.joke ){
-          //   document.createElement('div').innerHTML = `<div> result.setup : <p>  joke.delivery  </p> </div>`;
-          // } else {
-          //   document.createElement('div').innerHTML = `<div> result.joke </div>`;
-          // }
-          // document.body.append(div)
+        this.savedJokes = {...this.jokes[index]};
+        console.log(this.savedJokes);
       }
     },
 
-     async get_jokes() {
+     async get_jokes(newContains) {
       let baseURL = "https://v2.jokeapi.dev";
       let params = {
-         amount: 10
+        amount: 10
       };
       let response = await fetch(`
-         ${baseURL}/joke/Any?Contains=${this.contains}&amount=${params.amount}
-       `);
-        if (response.ok) { 
-          let data = await response.json();
-          this.jokes = data.jokes;
-        } else {
-          console.error("Ошибка HTTP: " + response.status);
-        }
+         ${baseURL}/joke/Any?Contains=${newContains}&amount=${params.amount}
+      `);
+      if (response.ok) { 
+        let data = await response.json();
+        this.jokes = data.jokes;
+      } else {
+        console.error("Ошибка HTTP: " + response.status);
+      }
     }
   },
 }
@@ -127,11 +121,13 @@ export default {
 * {
   box-sizing: border-box;
 }
-#searchJoke{
+body{
+  background: radial-gradient(#edf1cf, #43acb4);
+}
+#searchJoke {
   height: 50px;
   width: 100%;
   border: none;
-
 }
 .category{
   margin:7px 0 0 7px;
@@ -161,7 +157,7 @@ export default {
 
 
 .container {
-  overflow: scroll;
+  overflow-y: scroll;
   border: 1px solid black;
   height: 700px;
   width: 500px;
@@ -185,6 +181,12 @@ export default {
 }
 
 *::-webkit-scrollbar  {
+  width: 4px;
+}
+body::-webkit-scrollbar  {
+  width: 10px;
+}
+.container::-webkit-scrollbar  {
   width: 6px;
 }
 
@@ -193,8 +195,9 @@ export default {
   background-color: #f9f9fd;
   border-radius: 10px;
 }
-*::-webkit-scrollbar-thumb{
+
+*::-webkit-scrollbar-thumb {
   border-radius: 10px;
-  background: linear-gradient(180deg, #ffffff, #6a6262);
+  background: linear-gradient(180deg, #964212, #ea0000);
 }
 </style>
